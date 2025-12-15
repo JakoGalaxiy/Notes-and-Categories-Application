@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Notes and Categories Application</string>
+
+    <string name="search_hint">Buscar notas por título o contenido…</string>
+    <string name="add_note_category">Agregar nota o categoría</string>
+
+    <string name="add_new_note">Agregar Nueva Nota</string>
+    <string name="note_title_hint">Título de la nota</string>
+    <string name="note_content_hint">Contenido de la nota</string>
+    <string name="select_category">Seleccionar Categoría</string>
+    <string name="save_note">Guardar Nota</string>
+
+    <string name="add_new_category">Agregar Nueva Categoría</string>
+    <string name="category_name_hint">Nombre de la categoría</string>
+    <string name="save_category">Guardar Categoría</string>
+
+    <string name="category_title_placeholder">Título de la Categoría</string>
+    <string name="note_title_placeholder">Título de la Nota</string>
+</resources>
