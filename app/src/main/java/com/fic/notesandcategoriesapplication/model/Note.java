@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
+import androidx.room.Index;
 
 import static androidx.room.ForeignKey.CASCADE;
 
@@ -11,7 +12,9 @@ import static androidx.room.ForeignKey.CASCADE;
         foreignKeys = @ForeignKey(entity = Category.class,
                 parentColumns = "category_id",
                 childColumns = "category_id",
-                onDelete = CASCADE))
+                onDelete = CASCADE),
+        indices = {@Index(value = {"category_id"})} // <--- AÑADIR 'value ='
+)
 public class Note {
 
     @PrimaryKey(autoGenerate = true)

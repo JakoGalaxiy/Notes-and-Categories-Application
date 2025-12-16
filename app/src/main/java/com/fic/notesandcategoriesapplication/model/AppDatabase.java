@@ -28,6 +28,7 @@ public abstract class AppDatabase extends RoomDatabase {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                                     AppDatabase.class, "notes_db")
                             .addCallback(sRoomDatabaseCallback) // Opcional: para datos iniciales
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }

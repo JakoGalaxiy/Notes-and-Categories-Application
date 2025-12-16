@@ -18,34 +18,61 @@ public class NoteRepository {
         allCategories = noteCategoryDao.getAllCategories();
     }
 
-    // LiveData que contiene la relación 1:N
+    // --- LiveData de consultas (Ya existentes) ---
     public LiveData<List<CategoryWithNotes>> getAllCategoriesWithNotes() {
         return allCategoriesWithNotes;
     }
 
-    // LiveData de todas las categorías (útil para el spinner de AddNote)
     public LiveData<List<Category>> getAllCategories() {
         return allCategories;
     }
 
-    // Búsqueda avanzada
     public LiveData<List<Note>> searchNotes(String query) {
-        // En Room, la búsqueda con LIKE requiere envolver el texto con '%'
         String searchQuery = "%" + query + "%";
         return noteCategoryDao.searchNotesByText(searchQuery);
     }
 
-    // Inserción de nota
+    // --- MÉTODOS DE MANIPULACIÓN DE DATOS (YA EXISTENTES) ---
+
     public void insertNote(Note note) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             noteCategoryDao.insertNote(note);
         });
     }
 
-    // Inserción de categoría
     public void insertCategory(Category category) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             noteCategoryDao.insertCategory(category);
+        });
+    }
+
+    // --- MÉTODOS DE ACTUALIZACIÓN Y ELIMINACIÓN (NUEVOS) ---
+
+    // 1. Actualizar Nota
+    public void updateNote(Note note) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            noteCategoryDao.updateNote(note);
+        });
+    }
+
+    // 2. Eliminar Nota
+    public void deleteNote(Note note) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            noteCategoryDao.deleteNote(note);
+        });
+    }
+
+    // 3. Actualizar Categoría
+    public void updateCategory(Category category) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            noteCategoryDao.updateCategory(category);
+        });
+    }
+
+    // 4. Eliminar Categoría
+    public void deleteCategory(Category category) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            noteCategoryDao.deleteCategory(category);
         });
     }
 }

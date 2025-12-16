@@ -1,5 +1,6 @@
 package com.fic.notesandcategoriesapplication.controller;
 
+// ... (Imports existentes) ...
 import android.app.Application;
 
 import androidx.lifecycle.AndroidViewModel;
@@ -47,12 +48,16 @@ public class NoteController extends AndroidViewModel {
         noteRepository.insertCategory(category);
     }
 
-    // --- Consulta de Búsqueda ---
+    public void updateNote(Note note) {
+        noteRepository.updateNote(note);
+    }
+
+    public void delete(Note note) {
+        noteRepository.deleteNote(note);
+    }
 
     public LiveData<List<Note>> searchNotes(String query) {
         if (query == null || query.trim().isEmpty()) {
-            // Si la búsqueda está vacía, puedes retornar una lista vacía o todas las notas
-            // Aquí retornamos una búsqueda por un texto que no existirá para no mostrar resultados no buscados
             return noteRepository.searchNotes("A_VERY_UNLIKELY_TEXT_TO_BE_FOUND");
         }
         return noteRepository.searchNotes(query);

@@ -1,28 +1,31 @@
 package com.fic.notesandcategoriesapplication.view;
 
 // --- Importaciones de Android SDK y AndroidX ---
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton; // Para el botón de agregar
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 // --- Importaciones de tu propio proyecto (MVC) ---
 import com.fic.notesandcategoriesapplication.R;
 import com.fic.notesandcategoriesapplication.controller.NoteController;
-// NoteAdapter y CategoryNotesAdapter están en el mismo paquete 'view', pero se importan explícitamente si no se resuelven automáticamente
+import com.fic.notesandcategoriesapplication.model.Note;
 import com.fic.notesandcategoriesapplication.view.NoteAdapter;
 import com.fic.notesandcategoriesapplication.view.CategoryNotesAdapter;
 
-
-public class MainActivity extends AppCompatActivity {
+// IMPLEMENTAR LA INTERFAZ: NoteAdapter.OnItemClickListener
+public class MainActivity extends AppCompatActivity implements NoteAdapter.OnItemClickListener {
 
     private NoteController noteController;
     private RecyclerView categoriesNotesRecyclerView;
@@ -33,12 +36,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main); // Asume que tienes R.layout.activity_main
+        setContentView(R.layout.activity_main);
 
         // 1. Inicializar Vistas
         categoriesNotesRecyclerView = findViewById(R.id.categories_notes_recycler_view);
         searchEditText = findViewById(R.id.search_edit_text);
-        FloatingActionButton fabAdd = findViewById(R.id.fab_add); // Obtener referencia al FAB
+        FloatingActionButton fabAdd = findViewById(R.id.fab_add);
 
         // 2. Inicializar el Controller/ViewModel
         noteController = new ViewModelProvider(this).get(NoteController.class);
@@ -49,10 +52,16 @@ public class MainActivity extends AppCompatActivity {
         searchAdapter = new NoteAdapter();
         mainAdapter = new CategoryNotesAdapter();
 
+        // **IMPORTANTE: CONECTAR EL LISTENER DE ACCIÓN AL ADAPTADOR DE BÚSQUEDA**
+        searchAdapter.setOnItemClickListener(this);
+
+        // **AÑADIDO: CONECTAR EL LISTENER DE ACCIÓN AL ADAPTADOR PRINCIPAL**
+        mainAdapter.setOnItemClickListener(this);
+
         // Establecer el adaptador principal por defecto
         categoriesNotesRecyclerView.setAdapter(mainAdapter);
 
-        // 4. Lógica del FAB (Solución al problema de abrir la actividad)
+        // 4. Lógica del FAB
         fabAdd.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, AddNoteActivity.class);
             startActivity(intent);
@@ -62,11 +71,8 @@ public class MainActivity extends AppCompatActivity {
 
         // --- Observar la Relación 1:N (Datos Principales) ---
         noteController.getAllCategoriesWithNotes().observe(this, categoryWithNotesList -> {
-            // Solo actualiza si no hay texto de búsqueda activo
             if (searchEditText.getText().toString().isEmpty()) {
                 mainAdapter.setCategoriesWithNotes(categoryWithNotesList);
-
-                // Asegurar que el adaptador principal está activo si se reciben nuevos datos
                 if (categoriesNotesRecyclerView.getAdapter() != mainAdapter) {
                     categoriesNotesRecyclerView.setAdapter(mainAdapter);
                 }
@@ -83,18 +89,12 @@ public class MainActivity extends AppCompatActivity {
                 String searchText = s.toString().trim();
 
                 if (searchText.isEmpty()) {
-                    // 1. Volver a la lista principal (1:N)
                     categoriesNotesRecyclerView.setAdapter(mainAdapter);
-
-                    // 2. Asegurar que los datos principales se carguen si se borró el texto
                     mainAdapter.setCategoriesWithNotes(noteController.getAllCategoriesWithNotes().getValue());
                 } else {
-                    // 1. Cambiar al adaptador de búsqueda
                     if (categoriesNotesRecyclerView.getAdapter() != searchAdapter) {
                         categoriesNotesRecyclerView.setAdapter(searchAdapter);
                     }
-
-                    // 2. Ejecutar y observar los resultados de la búsqueda (Consulta LIKE)
                     noteController.searchNotes(searchText).observe(MainActivity.this, notes -> {
                         searchAdapter.setNotes(notes);
                     });
@@ -104,5 +104,36 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {}
         });
+    } // Fin de onCreate
+
+    // ******************************************************
+    // *** IMPLEMENTACIÓN DE NoteAdapter.OnItemClickListener ***
+    // ******************************************************
+
+    @Override
+    public void onEditClick(Note note) {
+        Intent intent = new Intent(MainActivity.this, AddNoteActivity.class);
+
+        // *** ENVÍO DE DATOS USANDO LAS CONSTANTES DE AddNoteActivity ***
+        intent.putExtra(AddNoteActivity.EXTRA_NOTE_ID, note.getNoteId());
+        intent.putExtra(AddNoteActivity.EXTRA_TITLE, note.getNoteTitle());
+        intent.putExtra(AddNoteActivity.EXTRA_CONTENT, note.getNoteContent());
+        intent.putExtra(AddNoteActivity.EXTRA_CATEGORY_ID, note.getCategoryId());
+        intent.putExtra(AddNoteActivity.EXTRA_CREATED_AT, note.getCreatedAt());
+
+        startActivity(intent);
+    }
+
+    @Override
+    public void onDeleteClick(Note note) {
+        new AlertDialog.Builder(this)
+                .setTitle("Confirmar Eliminación")
+                .setMessage("¿Estás seguro de que deseas eliminar la nota: \"" + note.getNoteTitle() + "\"?")
+                .setPositiveButton("Sí", (dialog, which) -> {
+                    noteController.delete(note);
+                    Toast.makeText(MainActivity.this, "Nota eliminada: " + note.getNoteTitle(), Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
 }

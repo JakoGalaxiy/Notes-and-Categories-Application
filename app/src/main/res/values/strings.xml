@@ -16,4 +16,7 @@
 
     <string name="category_title_placeholder">Título de la Categoría</string>
     <string name="note_title_placeholder">Título de la Nota</string>
+
+    <string name="edit_note_description">Editar nota</string>
+    <string name="delete_note_description">Eliminar nota</string>
 </resources>

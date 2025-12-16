@@ -19,6 +19,15 @@ public class CategoryNotesAdapter extends RecyclerView.Adapter<CategoryNotesAdap
 
     private List<CategoryWithNotes> dataList = Collections.emptyList();
 
+    // **NUEVA PROPIEDAD DE LISTENER**
+    private NoteAdapter.OnItemClickListener itemClickListener;
+
+    // **NUEVO MÉTODO PARA ESTABLECER EL LISTENER**
+    public void setOnItemClickListener(NoteAdapter.OnItemClickListener listener) {
+        this.itemClickListener = listener;
+        // NOTA: No hacemos notifyDataSetChanged() aquí, ya que el cambio se hará desde MainActivity.
+    }
+
     // --- VIEW HOLDER (Interno) ---
     public static class CategoryNoteViewHolder extends RecyclerView.ViewHolder {
         final TextView categoryTitleTextView;
@@ -55,13 +64,17 @@ public class CategoryNotesAdapter extends RecyclerView.Adapter<CategoryNotesAdap
         // 2. Configurar el RecyclerView anidado para las Notas
         List<Note> notes = currentGroup.getNotes();
 
-        // El RecyclerView anidado usa el adaptador simple de notas (NoteAdapter)
-        // Usamos setTag/getTag para mantener la referencia del adaptador entre reusos
+        // Obtener o crear el NoteAdapter anidado
         NoteAdapter noteAdapter = (NoteAdapter) holder.notesRecyclerView.getTag();
         if (noteAdapter == null) {
-            noteAdapter = new NoteAdapter(); // Reusa el NoteAdapter que ya creaste
+            noteAdapter = new NoteAdapter();
             holder.notesRecyclerView.setAdapter(noteAdapter);
             holder.notesRecyclerView.setTag(noteAdapter);
+
+            // **AÑADIDO: CONFIGURAR EL LISTENER SOLO UNA VEZ DURANTE LA CREACIÓN**
+            if (itemClickListener != null) {
+                noteAdapter.setOnItemClickListener(itemClickListener);
+            }
         }
 
         // Actualizar los datos del adaptador de notas con las notas de esta categoría

@@ -6,15 +6,56 @@
     android:padding="8dp"
     android:background="?android:attr/selectableItemBackground">
 
-    <TextView
-        android:id="@+id/note_title_text_view"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceSubtitle1"
-        android:textStyle="bold"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:text="@string/note_title_placeholder"/>
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/note_title_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="@string/note_title_placeholder"/>
+
+            <TextView
+                android:id="@+id/note_date_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:layout_marginTop="2dp"
+                android:text="2025-12-14 19:00:00"/>
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/edit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/edit_note_description"
+            android:src="@android:drawable/ic_menu_edit"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp" />
+
+        <ImageButton
+            android:id="@+id/delete_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/delete_note_description"
+            android:src="@android:drawable/ic_menu_delete"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/note_content_text_view"
@@ -23,14 +64,7 @@
         android:textAppearance="?attr/textAppearanceBody2"
         android:maxLines="2"
         android:ellipsize="end"
-        android:text="@string/note_content_hint"/>
-
-    <TextView
-        android:id="@+id/note_date_text_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceCaption"
         android:layout_marginTop="4dp"
-        android:text="2025-12-14 19:00:00"/>
+        android:text="@string/note_content_hint"/>
 
 </LinearLayout>
